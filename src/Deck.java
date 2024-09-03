@@ -4,52 +4,45 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Deck {
-  private class Card {
-    String valor;
-    String tipo;
-    
-    Card(String valor, String tipo){
-      this.valor = valor;
-      this.tipo = tipo;
-    }
+	Random random = new Random();
+	ArrayList<Card> deck;
 
-    public String toString(){ // transforma o nome das cartas q estavam em pointer em strings pra poder pegar no assets
-      return valor + "-" + tipo;
-    }
+	public void buildDeck() {
+		deck = new ArrayList<>();
+		String[] values = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"};
+		String[] suits = {"C", "E", "P", "O"};
+		
+		for (int i = 0; i < suits.length; i++) {
+			for (int j = 0; j < values.length; j++) {
+				Card card = new Card(values[j], suits[i]);
+				deck.add(card);
+			}
+		}
+	}
 
-    // public int getValue(){
-    //   if ("C".contains(valor) || "E".contains(valor) || "P".contains(valor) || "O".contains(valor)){
-    //     return Integer.parseInt(valor);
-    //   }
-    // }
+	public void shuffleDeck(){
+		for (int i = 0; i < deck.size(); i++){
+			int j = random.nextInt(deck.size());
+			Card currentCard = deck.get(i);
+			Card randomCard = deck.get(j);
+			deck.set(i, randomCard);
+			deck.set(j, currentCard);
+		}		
+	}
 
-  }
+	public void printCards (){
+		ArrayList<String> tmp;
+		tmp = new ArrayList<>();
 
-  Random random = new Random();
-  ArrayList<Card> deck;
+		for (int i = 0; i < deck.size(); i++) {
+			tmp.add(deck.get(i).value + "-" + deck.get(i).suit);
+		}
 
-  public void buildDeck() {
-    deck = new ArrayList<Card>();
-    String[] valores = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"};
-    String[] naipes = {"C", "E", "P", "O"};
-    
-    for (int i = 0; i < naipes.length; i++) {
-      for (int j = 0; j < valores.length; j++) {
-        Card card = new Card(valores[j], naipes[i]);
-        deck.add(card);
-      }
-    }
-  }
+		System.out.println(tmp);
+	}
 
-  public void embaralhaDeck(){
-    for (int i = 0; i < deck.size(); i++){
-      int j = random.nextInt(deck.size());
-      Card cardAtual = deck.get(i);
-      Card randomCard = deck.get(j);
-      deck.set(i, randomCard);
-      deck.set(j, cardAtual);
-    }
-    
-  }
-
+	public Card giveCard () {
+		Card card_given = deck.remove(deck.size() - 1);
+		return card_given;
+	}
 }
