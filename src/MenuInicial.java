@@ -9,22 +9,26 @@ import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
 
 public class MenuInicial extends JFrame {   
-	Font pixelMplus;
+	Font pixelMplus;    
+    Game game = new Game();
+    ImageIcon image = new ImageIcon("src/assets/images/logo.png");
+        
     
     public MenuInicial(){
-
         try{
-            pixelMplus = Font.createFont(Font.TRUETYPE_FONT, new File("src\\PixelMplus10-Regular.ttf")).deriveFont(30f);	
+            pixelMplus = Font.createFont(Font.TRUETYPE_FONT, new File("src/assets/fonts/PixelMplus10-Regular.ttf")).deriveFont(30f);	
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-            ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("src\\PixelMplus10-Regular.ttf")));			
+            ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("src/assets/fonts/PixelMplus10-Regular.ttf")));			
         }
         catch(IOException | FontFormatException e){}
 
+        setTitle("BlackBarry");
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
         setLocationRelativeTo(null); 
         getContentPane().setBackground(Color.black);
+        setIconImage(image.getImage());
 
         setLayout(null);
 
@@ -41,7 +45,7 @@ public class MenuInicial extends JFrame {
         btn_Iniciar.setFocusPainted(false);
         btn_Iniciar.setBounds(200, 140, 200, 50);
         btn_Iniciar.setFont(pixelMplus);
-        btn_Iniciar.addActionListener(e -> {Game start = new Game();}); // Adicionar a função que vai chamar a tela do jogo em si
+        btn_Iniciar.addActionListener(e -> {setVisible(false);game.startGame();});
         add(btn_Iniciar);
 
         JButton btn_Sair = new JButton("Sair");
@@ -55,5 +59,7 @@ public class MenuInicial extends JFrame {
 
         setVisible(true);
     }
+
+
 
 }
