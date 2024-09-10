@@ -1,7 +1,7 @@
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.*;
 
 public class App {
     private static JPanel cardPanel;
@@ -81,7 +81,7 @@ public class App {
         JPanel personagemPanel = new JPanel();
         personagemPanel.setLayout(new BorderLayout());
 
-        ImageIcon personagemIcon = new ImageIcon(App.class.getResource("/assets/amogus.png"));
+        ImageIcon personagemIcon = new ImageIcon(App.class.getResource("/assets/oponents/casal-programador.png"));
         JLabel personagemLabel = new JLabel(personagemIcon);
         personagemPanel.add(personagemLabel, BorderLayout.CENTER);
 
