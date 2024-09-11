@@ -1,119 +1,159 @@
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import javax.swing.*;
+import java.util.*;
 
 public class App {
-    private static JPanel cardPanel;
-    private static JPanel cardPanelDealer;
-    private static final int CARD_WIDTH = 100;
-    private static final int CARD_HEIGHT = 135;
+    private static JFrame frame;
+    private static JPanel playerPanel;
+    private static JPanel dealerPanel;
+    private static JPanel buttonPanel;
+    private static Game game;
+    private static Player player;
+    private static Enemy dealer;
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame();
-        frame.setSize(1920, 1080);
-        frame.setTitle("Blackjack");
+        game = new Game();
+        game.buildDeck();
+        game.shuffleDeck();
+
+
+        player = new Player("Jogador");
+        dealer = new Enemy("Dealer", "url_icon", Enemy.PlayStyle.SAFE);
+
+        frame = new JFrame("BlackBerry");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setResizable(false);
+        frame.setSize(500, 500);
+        frame.setLayout(new BorderLayout());
 
-        ImageIcon icon = new ImageIcon(App.class.getResource("logo.png"));
-        frame.setIconImage(icon.getImage());
+        playerPanel = new JPanel();
+        playerPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        dealerPanel = new JPanel();
+        dealerPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 
-        cardPanel = new JPanel();
-        cardPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout());
 
-        cardPanelDealer = new JPanel();
-        cardPanelDealer.setLayout(new FlowLayout(FlowLayout.CENTER));
+        JButton btnDrawCard = new JButton("Comprar Carta");
+        JButton btnStay = new JButton("Passar");
+        JButton btnReset = new JButton("Reiniciar Jogo");
 
-        ImageIcon buttonIcon = new ImageIcon(App.class.getResource("logo.png"));
-        Image scaledImage = buttonIcon.getImage().getScaledInstance(90, 90, Image.SCALE_SMOOTH);
-        ImageIcon scaledIcon = new ImageIcon(scaledImage);
+        btnDrawCard.addActionListener(e -> playerDrawCard());
+        btnStay.addActionListener(e -> dealerTurn());
+        btnReset.addActionListener(e -> resetGame());
 
-        ImageIcon deleteIcon = new ImageIcon(App.class.getResource("assets/X.png"));
-        Image scaledDelete = deleteIcon.getImage().getScaledInstance(90, 90, Image.SCALE_SMOOTH);
-        ImageIcon scaledDeleteIcon = new ImageIcon(scaledDelete);
+        buttonPanel.add(btnDrawCard);
+        buttonPanel.add(btnStay);
+        buttonPanel.add(btnReset);
+        
+        JPanel gamePanel = new JPanel(new BorderLayout());
 
-        JButton clearBord = new JButton(scaledDeleteIcon);
-        clearBord.setBorderPainted(false);
-        clearBord.setContentAreaFilled(false);
+        JPanel southPanel = new JPanel();
+        southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.Y_AXIS));
+        southPanel.add(playerPanel);
+        southPanel.add(buttonPanel);
 
-        JButton btnGetCard = new JButton(scaledIcon);
-        btnGetCard.setBorderPainted(false);
-        btnGetCard.setContentAreaFilled(false);
+        gamePanel.add(dealerPanel, BorderLayout.NORTH);
+        gamePanel.add(southPanel, BorderLayout.SOUTH);
 
-        JButton btnGetCardDealer = new JButton(scaledIcon);
-        btnGetCardDealer.setBorderPainted(false);
-        btnGetCardDealer.setContentAreaFilled(false);
+        JPanel dealerImagePanel = new JPanel();
+        dealerImagePanel.setLayout(new BorderLayout());
 
-        btnGetCard.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                pegarCarta();
-            }
-        });
+        ImageIcon dealerImage = new ImageIcon("path/to/dealer_image.png");
+        JLabel dealerImageLabel = new JLabel(dealerImage);
+        dealerImageLabel.setHorizontalAlignment(JLabel.CENTER);
+        dealerImagePanel.add(dealerImageLabel, BorderLayout.CENTER);
 
-        btnGetCardDealer.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                pegarCartaDealer();
-            }
-        });
-
-        clearBord.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                cardPanel.removeAll();
-                cardPanel.revalidate();
-                cardPanel.repaint();
-                cardPanelDealer.removeAll();
-                cardPanelDealer.revalidate();
-                cardPanelDealer.repaint();
-            }
-        });
-
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        buttonPanel.add(btnGetCardDealer);
-        buttonPanel.add(btnGetCard);
-        buttonPanel.add(clearBord);
-
-        JPanel mesaPanel = new JPanel(new BorderLayout());
-        mesaPanel.add(buttonPanel, BorderLayout.NORTH);
-        mesaPanel.add(cardPanelDealer, BorderLayout.CENTER);
-        mesaPanel.add(cardPanel, BorderLayout.SOUTH);
-
-        JPanel personagemPanel = new JPanel();
-        personagemPanel.setLayout(new BorderLayout());
-
-        ImageIcon personagemIcon = new ImageIcon(App.class.getResource("/assets/oponents/casal-programador.png"));
-        JLabel personagemLabel = new JLabel(personagemIcon);
-        personagemPanel.add(personagemLabel, BorderLayout.CENTER);
-
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, mesaPanel, personagemPanel);
-        splitPane.setDividerLocation(0.8);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, gamePanel, dealerImagePanel);
+        splitPane.setDividerLocation(frame.getWidth() / 2);
         splitPane.setResizeWeight(0.8);
 
-        frame.add(splitPane);
+        frame.getContentPane().add(splitPane);
+
+        startGame();
+
         frame.setVisible(true);
     }
 
-    private static void pegarCarta() {
-        ImageIcon cardImage = new ImageIcon(App.class.getResource("/assets/cards/1-C.png"));
+    private static void startGame() {
+        player.hand = new Hand();
+        dealer.hand = new Hand();
 
-        Image image = cardImage.getImage().getScaledInstance(CARD_WIDTH, CARD_HEIGHT, Image.SCALE_SMOOTH);
-        ImageIcon scaledCardImage = new ImageIcon(image);
+        player.hand.addCard(game.giveCard());
+        player.hand.addCard(game.giveCard());
+        dealer.hand.addCard(game.giveCard());
+        dealer.hand.addCard(game.giveCard());
 
-        JLabel cardLabel = new JLabel(scaledCardImage);
-        cardPanel.add(cardLabel);
-        cardPanel.revalidate();
-        cardPanel.repaint();
+        updatePlayerCards();
+        updateDealerCards();
     }
 
-    private static void pegarCartaDealer() {
-        ImageIcon cardImage = new ImageIcon(App.class.getResource("/assets/cards/back.png"));
+    private static void playerDrawCard() {
+        player.hand.addCard(game.giveCard());
+        updatePlayerCards();
 
-        Image image = cardImage.getImage().getScaledInstance(CARD_WIDTH, CARD_HEIGHT, Image.SCALE_SMOOTH);
-        ImageIcon scaledCardImage = new ImageIcon(image);
+        if (player.hand.getHandValue() > 21) {
+            JOptionPane.showMessageDialog(frame, "Você estourou! Dealer vence.");
+            resetGame();
+        }
+    }
 
-        JLabel cardLabel = new JLabel(scaledCardImage);
-        cardPanelDealer.add(cardLabel);
-        cardPanelDealer.revalidate();
-        cardPanelDealer.repaint();
+    private static void dealerTurn() {
+        while (dealer.hand.getHandValue() < 17) {
+            dealer.hand.addCard(game.giveCard());
+            updateDealerCards();
+        }
+
+        int dealerPoints = dealer.hand.getHandValue();
+        int playerPoints = player.hand.getHandValue();
+
+        if (dealerPoints > 21) {
+            JOptionPane.showMessageDialog(frame, "Dealer estourou! Você vence.");
+        } else if (dealerPoints > playerPoints) {
+            JOptionPane.showMessageDialog(frame, "Dealer vence com " + dealerPoints + " pontos.");
+        } else if (dealerPoints < playerPoints) {
+            JOptionPane.showMessageDialog(frame, "Você vence com " + playerPoints + " pontos.");
+        } else {
+            JOptionPane.showMessageDialog(frame, "Empate!");
+        }
+
+        resetGame();
+    }
+
+    private static void updatePlayerCards() {
+        playerPanel.removeAll();
+        for (Card card : player.hand.getCards()) {
+            ImageIcon cardIcon = new ImageIcon("assets/cards/" + card.getImageName()); // Atualize o caminho conforme
+            Image scaledImage = cardIcon.getImage().getScaledInstance(100, 150, Image.SCALE_SMOOTH);
+            ImageIcon scaledIcon = new ImageIcon(scaledImage);
+            JLabel cardLabel = new JLabel(scaledIcon);
+            playerPanel.add(cardLabel);
+        }
+        playerPanel.revalidate();
+        playerPanel.repaint();
+    }
+
+    private static void updateDealerCards() {
+        dealerPanel.removeAll();
+        for (Card card : dealer.hand.getCards()) {
+            ImageIcon cardIcon = new ImageIcon("assets/cards/" + card.getImageName()); // Atualize o caminho conforme
+            Image scaledImage = cardIcon.getImage().getScaledInstance(100, 150, Image.SCALE_SMOOTH);
+            ImageIcon scaledIcon = new ImageIcon(scaledImage);
+            JLabel cardLabel = new JLabel(scaledIcon);
+            dealerPanel.add(cardLabel);
+        }
+        dealerPanel.revalidate();
+        dealerPanel.repaint();
+    }
+
+    private static void resetGame() {
+        playerPanel.removeAll();
+        dealerPanel.removeAll();
+        playerPanel.revalidate();
+        dealerPanel.revalidate();
+        playerPanel.repaint();
+        dealerPanel.repaint();
+        game.shuffleDeck();
+        startGame();
     }
 }

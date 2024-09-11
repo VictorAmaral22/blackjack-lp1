@@ -1,170 +1,137 @@
-package src;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Game extends Deck {
-	public Game(){
-		
+	private ArrayList<Enemy> enemies;
+	private Scanner scanner = new Scanner(System.in);
+
+	public enum GameResult {
+		BOTH_OUT_OF_RANGE,
+		PLAYER_OUT_OF_RANGE,
+		ENEMY_OUT_OF_RANGE,
+		DRAW,
+		ENEMY_WINS,
+		PLAYER_WINS,
+		PLAYER_QUIT
 	}
 
-	public static void clearScreen() {
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
-    }
+	public Game() {
+		this.enemies = new ArrayList<>();
+		this.enemies.add(new Enemy("Dev Junior", "/src/assets/oponents/oponent (3).png", Enemy.PlayStyle.SAFE));
+		this.enemies.add(new Enemy("Mestre do React", "/src/assets/oponents/oponent (1).png", Enemy.PlayStyle.RISKY));
+		// Continue adicionando inimigos...
+	}
 
-	private String verifyWinner (int player_hand_value, int enemy_hand_value) {
-		if (player_hand_value > 21 && enemy_hand_value > 21) {
-			return "both_out_of_range";
+	public ArrayList<Enemy> getEnemies() {
+		return this.enemies;
+	}
+
+	private GameResult verifyWinner(int playerHandValue, int enemyHandValue) {
+		if (playerHandValue > 21 && enemyHandValue > 21) {
+			return GameResult.BOTH_OUT_OF_RANGE;
+		} else if (playerHandValue > 21) {
+			return GameResult.PLAYER_OUT_OF_RANGE;
+		} else if (enemyHandValue > 21) {
+			return GameResult.ENEMY_OUT_OF_RANGE;
+		} else if (playerHandValue == enemyHandValue) {
+			return GameResult.DRAW;
 		} else {
-			if (player_hand_value > 21) {
-				return "player_out_of_range";
-			} else if (enemy_hand_value > 21) {
-				return "enemy_out_of_range";
-			} else if (player_hand_value == enemy_hand_value) {
-				return "draw";
-			} else if (player_hand_value < enemy_hand_value) {
-				return "enemy_wins";
-			} else {
-				return "player_wins";
+			return (playerHandValue > enemyHandValue) ? GameResult.PLAYER_WINS : GameResult.ENEMY_WINS;
+		}
+	}
+
+	public Hand buildHand(Player player) {
+		Hand hand = new Hand(player.getName());
+		hand.addCard(giveCard());
+		hand.addCard(giveCard());
+		return hand;
+	}
+
+	public Player.GameAction playerTurn(Player player, Hand playerHand) {
+		while (true) {
+			System.out.println("Sua mão: ");
+			playerHand.printCards();
+			System.out.println("Total: " + playerHand.getHandValue());
+
+			System.out.println("O que deseja fazer? \n1 - Comprar carta\n2 - Passar a vez\n3 - Desistir");
+			int action = Integer.parseInt(scanner.nextLine());
+
+			if (action == 1) {
+				playerHand.addCard(giveCard());
+			} else if (action == 2) {
+				return Player.GameAction.PASS;
+			} else if (action == 3) {
+				return Player.GameAction.QUIT;
 			}
 		}
 	}
 
-	public void startGame(){
-		int[] rounds = new int[]{ 1, 2, 3, 4, 5 };
-		String[] enemies = new String[]{ "Dev Júnior", "Scrum Master", "Gustavo Guanabara", "Uncle Bob",  "Berry" };
+	public void enemyTurn(Enemy enemy, Hand enemyHand) {
+		while (true) {
+			Enemy.GameAction decision = enemy.decisionMaking(enemyHand.getHandValue());
 
-		Boolean quit = false;
-		try (Scanner scanner = new Scanner(System.in)) {
-			System.out.println("Bem vindo ao Blackberry! ");
-			System.out.println("Informe o seu nome: ");
-			String name = scanner.nextLine();
-			Player player = new Player(name);
-			clearScreen();
-
-			while (true){
-				Integer action;
-
-				for (int i = 0; i < rounds.length; i++) {
-					// Thread.sleep(1000);
-					System.out.println("\n\nROUND "+(i+1));
-
-					buildDeck();
-					shuffleDeck();
-
-					ArrayList<Card> cards_given = new ArrayList<>();
-					cards_given.add(giveCard());
-					cards_given.add(giveCard());
-					Hand player_hand = new Hand(cards_given, player.getName());
-					
-					Enemy enemy = new Enemy(enemies[i]);
-					ArrayList<Card> cards_enemy = new ArrayList<>();
-					cards_enemy.add(giveCard());
-					cards_enemy.add(giveCard());
-					Hand enemy_hand = new Hand(cards_enemy, enemy.getName());
-
-					System.out.println("Você enfrentará "+enemy.getName()+ "!");
-					action = 0;
-					// Thread.sleep(1000);
-					
-					while (true) {
-						System.out.println("Sua mão: ");
-						player_hand.printCards();
-						System.out.println("Total: " + player_hand.getHandValue());
-
-						String output = verifyWinner(player_hand.getHandValue(), enemy_hand.getHandValue());
-						if ("both_out_of_range".equals(output)) {
-							System.out.println("Mão de "+enemy.getName()+": ");
-							enemy_hand.printCards();
-							System.out.println("Total: " + enemy_hand.getHandValue());
-
-							System.out.println("Vocês dois estouraram!");
-							i -= 1;
-							break;
-						} 
-						if ("player_out_of_range".equals(output)){
-							System.out.println("Você estourou!");
-							i = -1;
-							enemy.addWin();
-							break;
-						}
-						if ("enemy_out_of_range".equals(output)){
-							System.out.println("Mão de "+enemy.getName()+": ");
-							enemy_hand.printCards();
-							System.out.println("Total: " + enemy_hand.getHandValue());
-
-							System.out.println("O seu adversário estourou!");
-							player.addWin();
-							break;
-						}
-
-						if (action == 2){
-							System.out.println("Mão de "+enemy.getName()+": ");
-							enemy_hand.printCards();
-							System.out.println("Total: " + enemy_hand.getHandValue());
-
-							if ("draw".equals(output)) {
-								System.out.println("Vocês empataram!");
-								i -= 1;
-							}
-							if ("enemy_wins".equals(output)) {
-								System.out.println("O adversário venceu!");
-								i = -1;
-								enemy.addWin();
-							}
-							if ("player_wins".equals(output)){
-								System.out.println("Você venceu!");
-								player.addWin();
-							}
-
-							break;
-						}					
-					
-						System.out.println("O que deseja fazer? \n1 - Comprar carta\n2 - Passar a vez\n3 - Desistir");
-						action = Integer.valueOf(scanner.nextLine());
-
-						if (action == 1) {
-							player_hand.addCard(giveCard());
-							// Thread.sleep(1000);
-						}
-						if (action == 2) {
-							while (true) {
-								// Thread.sleep(1000);
-								int enemy_action = enemy.decisionMaking(enemy_hand.getHandValue());
-								System.out.println(enemy_action);
-								if (enemy_action == 1) {
-									System.out.println("Adversário comprou!");
-									enemy_hand.addCard(giveCard());
-								} else {
-									System.out.println("Adversário passou a vez!");
-									break;
-								}
-							}
-						}
-						if (action == 3) {
-							quit = true;
-							enemy.addWin();
-							break;
-						}
-					}
-
-					if (action == 3) {
-						break;
-					}
-				}
-
-				if (quit){
-					break;
-				} else {
-					System.out.println("Parabéns, você zerou o jogo!");
-					break;
-				}
+			if (decision == Enemy.GameAction.BUY) {
+				enemyHand.addCard(giveCard());
+			} else if (decision == Enemy.GameAction.PASS) {
+				break;
 			}
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
+		}
+	}
+
+	public GameResult runRound(Player player, Enemy enemy) {
+		buildDeck();
+		shuffleDeck();
+
+		Hand playerHand = buildHand(player);
+		Hand enemyHand = buildHand(enemy);
+
+		System.out.println("Você enfrentará " + enemy.getName() + "!");
+
+		Player.GameAction action = playerTurn(player, playerHand);
+
+		if (action == Player.GameAction.QUIT) {
+			return GameResult.PLAYER_QUIT;
 		}
 
-		System.out.println("Out of while");
-		System.exit(0);
+		enemyTurn(enemy, enemyHand);
+		System.out.println("Mão do oponente: ");
+		enemyHand.printCards();
+		System.out.println("Total: " + enemyHand.getHandValue());
+
+		return verifyWinner(playerHand.getHandValue(), enemyHand.getHandValue());
+	}
+
+	public void startGame() {
+		System.out.println("Bem-vindo ao jogo de Blackjack!");
+		System.out.println("Informe o seu nome: ");
+		String name = scanner.nextLine();
+		Player player = new Player(name);
+
+		for (int round = 0; round < this.enemies.size(); round++) {
+			GameResult result = runRound(player, this.enemies.get(round));
+
+			if (result == GameResult.BOTH_OUT_OF_RANGE) {
+				System.out.println("Ambos estouraram.");
+				round--;
+			} else if (result == GameResult.DRAW) {
+				System.out.println("Empate.");
+				round--;
+			} else if (result == GameResult.ENEMY_OUT_OF_RANGE) {
+				player.addWin();
+				System.out.println("Oponente estourou.");
+			} else if (result == GameResult.PLAYER_OUT_OF_RANGE) {
+				System.out.println("Você estourou.");
+				break;
+			} else if (result == GameResult.ENEMY_WINS) {
+				System.out.println("Oponente venceu.");
+				break;
+			} else if (result == GameResult.PLAYER_WINS) {
+				player.addWin();
+				System.out.println("Você venceu!");
+			} else if (result == GameResult.PLAYER_QUIT) {
+				System.out.println("Você desistiu.");
+				break;
+			}
+		}
 	}
 }

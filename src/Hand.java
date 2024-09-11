@@ -1,27 +1,41 @@
-package src;
 import java.util.ArrayList;
 
-public class Hand extends Deck {
-    String player_name;
+public class Hand {
+    private ArrayList<Card> cards;
+    private String owner;
 
-    Hand(ArrayList<Card> cards, String player_name){
-        this.deck = cards;
-        this.player_name = player_name;
+    public Hand() {
+        this.cards = new ArrayList<>();
     }
 
-    public String getPlayerName () {
-        return player_name;
+    public Hand(String owner) {
+        this.cards = new ArrayList<>();
+        this.owner = owner;
     }
 
-    public int getHandValue () {
-        int sum = 0;
-        for (int i = 0; i < this.deck.size(); i++) {
-            sum += this.deck.get(i).getValue();
+    public ArrayList<Card> getCards() {
+        return cards;
+    }
+
+    public void addCard(Card card) {
+        this.cards.add(card);
+    }
+
+    public int getHandValue() {
+        int total = 0;
+        for (Card card : cards) {
+            // Converte o valor da carta em um número inteiro
+            int cardValue = Integer.parseInt(card.getValue());
+            // Embaralha as cartas com valores acima de 10 como se fossem 10 (valores de
+            // figuras)
+            total += Math.min(cardValue, 10);
         }
-        return sum;
+        return total;
     }
 
-    public void addCard (Card card) {
-        this.deck.add(card);
+    public void printCards() {
+        for (Card card : cards) {
+            System.out.println(card.getValue() + "-" + card.getSuit());
+        }
     }
 }

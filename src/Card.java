@@ -1,19 +1,22 @@
-package src;
-
 public class Card {
     String value;
     String suit;
 
-    Card(String value, String suit) {
+    public Card(String value, String suit) {
         this.value = value;
         this.suit = suit;
     }
 
-    public String getCardImg() {
-        return value + "-" + suit;
+    public String getValue() {
+        return this.value;
     }
 
-    public int getValue() {
-        return Integer.parseInt(this.value);
+    public String getSuit() {
+        return this.suit;
     }
+
+    public String getImageName() {
+        return value + "-" + suit + ".png"; // Ajuste o formato do nome da imagem conforme necessário
+    }
+
 }
