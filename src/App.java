@@ -1,7 +1,7 @@
+
+
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
-import java.util.*;
 
 public class App {
     private static JFrame frame;
@@ -10,7 +10,11 @@ public class App {
     private static JPanel buttonPanel;
     private static Game game;
     private static Player player;
-    private static Enemy dealer;
+    private static Enemy dealer; 
+    private static int levelCont = 0;
+    private static JPanel dealerImagePanel = new JPanel();
+
+
 
     public static void main(String[] args) {
         game = new Game();
@@ -45,24 +49,24 @@ public class App {
         buttonPanel.add(btnStay);
         buttonPanel.add(btnReset);
         
-        JPanel gamePanel = new JPanel(new BorderLayout());
-
+        
         JPanel southPanel = new JPanel();
         southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.Y_AXIS));
         southPanel.add(playerPanel);
         southPanel.add(buttonPanel);
 
+        JPanel gamePanel = new JPanel(new BorderLayout());
         gamePanel.add(dealerPanel, BorderLayout.NORTH);
         gamePanel.add(southPanel, BorderLayout.SOUTH);
 
-        JPanel dealerImagePanel = new JPanel();
-        dealerImagePanel.setLayout(new BorderLayout());
-
-        ImageIcon dealerImage = new ImageIcon("path/to/dealer_image.png");
+        ImageIcon dealerImage = new ImageIcon("src/assets/images/dealer-" + "0" + ".png");
         JLabel dealerImageLabel = new JLabel(dealerImage);
-        dealerImageLabel.setHorizontalAlignment(JLabel.CENTER);
-        dealerImagePanel.add(dealerImageLabel, BorderLayout.CENTER);
 
+        dealerImagePanel.setLayout(new BorderLayout());
+        dealerImageLabel.setHorizontalAlignment(JLabel.CENTER);
+
+        dealerImagePanel.add(dealerImageLabel, BorderLayout.CENTER);
+        
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, gamePanel, dealerImagePanel);
         splitPane.setDividerLocation(frame.getWidth() / 2);
         splitPane.setResizeWeight(0.8);
@@ -75,6 +79,10 @@ public class App {
     }
 
     private static void startGame() {
+        if (levelCont > 4){
+            System.exit(0); // ADD AQUI O QUE VAI ACONTECER CASO O PLAYER GANHE TODOS LEVELS
+        }
+
         player.hand = new Hand();
         dealer.hand = new Hand();
 
@@ -85,6 +93,18 @@ public class App {
 
         updatePlayerCards();
         updateDealerCards();
+    }
+
+    private static void updtadeLevel() {
+        levelCont += 1;
+        System.out.println(levelCont);
+        dealerImagePanel.removeAll();
+        ImageIcon dealerImage = new ImageIcon("src/assets/images/dealer-" + levelCont + ".png");
+        JLabel dealerImageLabel = new JLabel(dealerImage);
+        dealerImagePanel.setLayout(new BorderLayout());
+        dealerImageLabel.setHorizontalAlignment(JLabel.CENTER);
+        dealerImagePanel.add(dealerImageLabel, BorderLayout.CENTER);
+        dealerImagePanel.repaint();
     }
 
     private static void playerDrawCard() {
@@ -108,21 +128,24 @@ public class App {
 
         if (dealerPoints > 21) {
             JOptionPane.showMessageDialog(frame, "Dealer estourou! Você vence.");
+            updtadeLevel();
         } else if (dealerPoints > playerPoints) {
             JOptionPane.showMessageDialog(frame, "Dealer vence com " + dealerPoints + " pontos.");
         } else if (dealerPoints < playerPoints) {
             JOptionPane.showMessageDialog(frame, "Você vence com " + playerPoints + " pontos.");
+            updtadeLevel();
         } else {
             JOptionPane.showMessageDialog(frame, "Empate!");
+            
         }
-
         resetGame();
+
     }
 
     private static void updatePlayerCards() {
         playerPanel.removeAll();
         for (Card card : player.hand.getCards()) {
-            ImageIcon cardIcon = new ImageIcon("assets/cards/" + card.getImageName()); // Atualize o caminho conforme
+            ImageIcon cardIcon = new ImageIcon("src/assets/cards/" + card.getImageName()); // Atualize o caminho conforme
             Image scaledImage = cardIcon.getImage().getScaledInstance(100, 150, Image.SCALE_SMOOTH);
             ImageIcon scaledIcon = new ImageIcon(scaledImage);
             JLabel cardLabel = new JLabel(scaledIcon);
@@ -135,7 +158,7 @@ public class App {
     private static void updateDealerCards() {
         dealerPanel.removeAll();
         for (Card card : dealer.hand.getCards()) {
-            ImageIcon cardIcon = new ImageIcon("assets/cards/" + card.getImageName()); // Atualize o caminho conforme
+            ImageIcon cardIcon = new ImageIcon("src/assets/cards/" + card.getImageName());
             Image scaledImage = cardIcon.getImage().getScaledInstance(100, 150, Image.SCALE_SMOOTH);
             ImageIcon scaledIcon = new ImageIcon(scaledImage);
             JLabel cardLabel = new JLabel(scaledIcon);
@@ -152,6 +175,8 @@ public class App {
         dealerPanel.revalidate();
         playerPanel.repaint();
         dealerPanel.repaint();
+        dealerImagePanel.repaint();
+        game.buildDeck();
         game.shuffleDeck();
         startGame();
     }
