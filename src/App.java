@@ -99,7 +99,7 @@ public class App {
         southPanel.add(playerPanel);
         southPanel.add(buttonPanel);
 
-        gamePanel = new BackgroundPanel("assets/mesa.png"); // Imagem inicial do fundo
+        gamePanel = new BackgroundPanel("assets/mesa.png");
         gamePanel.setLayout(new BorderLayout());
 
         // Outros componentes adicionados ao gamePanel
@@ -118,8 +118,8 @@ public class App {
         
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, gamePanel, dealerImagePanel);
         splitPane.setDividerLocation(frame.getWidth() / 2); // Divida o painel
-        splitPane.setResizeWeight(0.8); // Ajuste o peso de redimensionamento
-        splitPane.setOpaque(false); // Deixe o splitPane transparente para exibir o fundo
+        splitPane.setResizeWeight(0.8);
+        splitPane.setOpaque(false);
 
         frame.getContentPane().add(splitPane);
 

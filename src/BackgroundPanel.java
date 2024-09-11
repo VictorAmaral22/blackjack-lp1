@@ -4,16 +4,14 @@ import javax.swing.*;
 class BackgroundPanel extends JPanel {
     private Image backgroundImage;
 
-    // Construtor para carregar a imagem inicial de fundo
     public BackgroundPanel(String filePath) {
-        setBackgroundImage(filePath); // Inicializa com a imagem fornecida
+        setBackgroundImage(filePath);
     }
 
-    // Método para alterar a imagem de fundo dinamicamente
     public void setBackgroundImage(String filePath) {
         try {
             backgroundImage = new ImageIcon(filePath).getImage();
-            repaint(); // Repaint para atualizar a tela com a nova imagem
+            repaint();
         } catch (Exception e) {
             e.printStackTrace();
         }
