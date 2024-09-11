@@ -1,7 +1,45 @@
-
-
 import java.awt.*;
 import javax.swing.*;
+import javax.sound.sampled.*;
+import java.io.File;
+import java.io.IOException;
+
+class SoundUtil {
+    private Clip backgroundClip;
+
+    // Método para tocar som de fundo em loop
+    public void playBackgroundSound(String filePath) {
+        try {
+            File soundFile = new File(filePath);
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundFile);
+            backgroundClip = AudioSystem.getClip();
+            backgroundClip.open(audioStream);
+            backgroundClip.loop(Clip.LOOP_CONTINUOUSLY);
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Método para parar o som de fundo
+    public void stopBackgroundSound() {
+        if (backgroundClip != null && backgroundClip.isRunning()) {
+            backgroundClip.stop();
+        }
+    }
+
+    // Método para tocar efeito sonoro uma vez
+    public void playSoundEffect(String filePath) {
+        try {
+            File soundFile = new File(filePath);
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundFile);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioStream);
+            clip.start();
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
+        }
+    }
+}
 
 public class App {
     private static JFrame frame;
@@ -14,7 +52,9 @@ public class App {
     private static int levelCont = 0;
     private static JPanel dealerImagePanel = new JPanel();
 
+    private static SoundUtil soundUtil = new SoundUtil();
 
+    private static BackgroundPanel gamePanel;
 
     public static void main(String[] args) {
         game = new Game();
@@ -24,18 +64,22 @@ public class App {
         player = new Player("Jogador");
         dealer = new Enemy("Dealer", "url_icon", Enemy.PlayStyle.SAFE);
 
+        gamePanel = new BackgroundPanel("assets/mesa.png"); // Imagem inicial do fundo
+        gamePanel.setLayout(new BorderLayout());
+
         frame = new JFrame("BlackBerry");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(500, 500);
         frame.setLayout(new BorderLayout());
 
-        playerPanel = new JPanel();
-        playerPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-        dealerPanel = new JPanel();
-        dealerPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        playerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        playerPanel.setOpaque(false); // Painel transparente
 
-        buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout());
+        dealerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        dealerPanel.setOpaque(false); // Painel transparente
+
+        buttonPanel = new JPanel(new FlowLayout());
+        buttonPanel.setOpaque(false); // Painel transparente
 
         JButton btnDrawCard = new JButton("Comprar Carta");
         JButton btnStay = new JButton("Passar");
@@ -49,27 +93,33 @@ public class App {
         buttonPanel.add(btnStay);
         buttonPanel.add(btnReset);
         
-        
         JPanel southPanel = new JPanel();
         southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.Y_AXIS));
+        southPanel.setOpaque(false); // Painel transparente
         southPanel.add(playerPanel);
         southPanel.add(buttonPanel);
 
-        JPanel gamePanel = new JPanel(new BorderLayout());
+        gamePanel = new BackgroundPanel("assets/mesa.png"); // Imagem inicial do fundo
+        gamePanel.setLayout(new BorderLayout());
+
+        // Outros componentes adicionados ao gamePanel
         gamePanel.add(dealerPanel, BorderLayout.NORTH);
         gamePanel.add(southPanel, BorderLayout.SOUTH);
-
-        ImageIcon dealerImage = new ImageIcon("src/assets/images/dealer-" + "0" + ".png");
+        
+        ImageIcon dealerImage = new ImageIcon("assets/images/dealer-" + "0" + ".png");
         JLabel dealerImageLabel = new JLabel(dealerImage);
+
+        soundUtil.playBackgroundSound("C:\\\\Users\\\\shits\\\\Desktop\\\\blackjack-lp1-1\\\\src\\\\assets\\\\sounds\\\\nivel1.wav");
 
         dealerImagePanel.setLayout(new BorderLayout());
         dealerImageLabel.setHorizontalAlignment(JLabel.CENTER);
 
-        dealerImagePanel.add(dealerImageLabel, BorderLayout.CENTER);
+        dealerImagePanel.add(dealerImageLabel, BorderLayout.SOUTH);
         
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, gamePanel, dealerImagePanel);
-        splitPane.setDividerLocation(frame.getWidth() / 2);
-        splitPane.setResizeWeight(0.8);
+        splitPane.setDividerLocation(frame.getWidth() / 2); // Divida o painel
+        splitPane.setResizeWeight(0.8); // Ajuste o peso de redimensionamento
+        splitPane.setOpaque(false); // Deixe o splitPane transparente para exibir o fundo
 
         frame.getContentPane().add(splitPane);
 
@@ -99,17 +149,35 @@ public class App {
         levelCont += 1;
         System.out.println(levelCont);
         dealerImagePanel.removeAll();
-        ImageIcon dealerImage = new ImageIcon("src/assets/images/dealer-" + levelCont + ".png");
+        ImageIcon dealerImage = new ImageIcon("assets/images/dealer-" + levelCont + ".png");
         JLabel dealerImageLabel = new JLabel(dealerImage);
         dealerImagePanel.setLayout(new BorderLayout());
         dealerImageLabel.setHorizontalAlignment(JLabel.CENTER);
-        dealerImagePanel.add(dealerImageLabel, BorderLayout.CENTER);
+        dealerImagePanel.add(dealerImageLabel, BorderLayout.SOUTH);
         dealerImagePanel.repaint();
+        if (levelCont == 1) {
+            soundUtil.stopBackgroundSound();
+            JOptionPane.showMessageDialog(frame, "Nível 2");
+            gamePanel.setBackgroundImage("assets/amogus.png"); // Troca a imagem de fundo para o nível 2
+            soundUtil.playBackgroundSound("C:\\\\Users\\\\shits\\\\Desktop\\\\blackjack-lp1-1\\\\src\\\\assets\\\\sounds\\\\nivel2.wav");
+        }
+        if (levelCont == 2) {
+            soundUtil.stopBackgroundSound();
+            JOptionPane.showMessageDialog(frame, "Nível 3");
+            soundUtil.playBackgroundSound("C:\\\\Users\\\\shits\\\\Desktop\\\\blackjack-lp1-1\\\\src\\\\assets\\\\sounds\\\\nivel3.wav");
+        }
+        if (levelCont == 3) {
+            soundUtil.stopBackgroundSound();
+            JOptionPane.showMessageDialog(frame,"O Desafio final chegou");
+            soundUtil.playBackgroundSound("C:\\\\Users\\\\shits\\\\Desktop\\\\blackjack-lp1-1\\\\src\\\\assets\\\\sounds\\\\berry.wav");
+        }
     }
 
     private static void playerDrawCard() {
         player.hand.addCard(game.giveCard());
         updatePlayerCards();
+
+        soundUtil.playSoundEffect("C:\\\\Users\\\\shits\\\\Desktop\\\\blackjack-lp1-1\\\\src\\\\assets\\\\sounds\\\\card.wav");
 
         if (player.hand.getHandValue() > 21) {
             JOptionPane.showMessageDialog(frame, "Você estourou! Dealer vence.");
@@ -131,6 +199,7 @@ public class App {
             updtadeLevel();
         } else if (dealerPoints > playerPoints) {
             JOptionPane.showMessageDialog(frame, "Dealer vence com " + dealerPoints + " pontos.");
+            resetGame();
         } else if (dealerPoints < playerPoints) {
             JOptionPane.showMessageDialog(frame, "Você vence com " + playerPoints + " pontos.");
             updtadeLevel();
@@ -145,7 +214,7 @@ public class App {
     private static void updatePlayerCards() {
         playerPanel.removeAll();
         for (Card card : player.hand.getCards()) {
-            ImageIcon cardIcon = new ImageIcon("src/assets/cards/" + card.getImageName()); // Atualize o caminho conforme
+            ImageIcon cardIcon = new ImageIcon("assets/cards/" + card.getImageName()); // Atualize o caminho conforme
             Image scaledImage = cardIcon.getImage().getScaledInstance(100, 150, Image.SCALE_SMOOTH);
             ImageIcon scaledIcon = new ImageIcon(scaledImage);
             JLabel cardLabel = new JLabel(scaledIcon);
@@ -158,7 +227,7 @@ public class App {
     private static void updateDealerCards() {
         dealerPanel.removeAll();
         for (Card card : dealer.hand.getCards()) {
-            ImageIcon cardIcon = new ImageIcon("src/assets/cards/" + card.getImageName());
+            ImageIcon cardIcon = new ImageIcon("assets/cards/" + card.getImageName());
             Image scaledImage = cardIcon.getImage().getScaledInstance(100, 150, Image.SCALE_SMOOTH);
             ImageIcon scaledIcon = new ImageIcon(scaledImage);
             JLabel cardLabel = new JLabel(scaledIcon);
