@@ -32,7 +32,63 @@ public class App {
 
     
 
+    private static Font pixelMplus;    
+    private static JFrame frameMenuInicial = new JFrame();
+    
+
+    private static BackgroundPanel gamePanel;
+
     public static void main(String[] args) {
+        try{
+            pixelMplus = Font.createFont(Font.TRUETYPE_FONT, new File("src/assets/fonts/PixelMplus10-Regular.ttf")).deriveFont(30f);	
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("src/assets/fonts/PixelMplus10-Regular.ttf")));			
+        }
+        catch(IOException | FontFormatException e){}
+
+        soundUtil.playBackgroundSound("src/assets/sounds/main_title.wav");
+
+        frameMenuInicial.setTitle("BlackBarry");
+        frameMenuInicial.setSize(600, 400);
+        frameMenuInicial.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frameMenuInicial.setResizable(false);
+        frameMenuInicial.setLocationRelativeTo(null); 
+        frameMenuInicial.getContentPane().setBackground(Color.black);
+
+        frameMenuInicial.setLayout(null);
+
+        JLabel title = new JLabel("BlackBarry");
+        title.setForeground(Color.WHITE);
+        title.setFont(pixelMplus);
+        title.setBounds(200, 50, 200, 50);
+        title.setHorizontalAlignment(SwingConstants.CENTER);
+        frameMenuInicial.add(title);
+
+        JButton btn_Iniciar = new JButton("Iniciar");
+        btn_Iniciar.setBackground(Color.WHITE);
+        btn_Iniciar.setBorder(null);
+        btn_Iniciar.setFocusPainted(false);
+        btn_Iniciar.setBounds(200, 140, 200, 50);
+        btn_Iniciar.setFont(pixelMplus);
+        btn_Iniciar.addActionListener(e -> {
+            frameMenuInicial.setVisible(false);
+            soundUtil.stopBackgroundSound();
+            soundUtil.playBackgroundSound("src/assets/sounds/nivel1.wav");
+            drawScreen(); 
+            runRound();
+        });
+        frameMenuInicial.add(btn_Iniciar);
+
+        JButton btn_Sair = new JButton("Sair");
+        btn_Sair.setBackground(Color.WHITE);
+        btn_Sair.setBorder(null);
+        btn_Sair.setFocusPainted(false);
+        btn_Sair.setBounds(200, 220, 200, 50);
+        btn_Sair.setFont(pixelMplus);
+        btn_Sair.addActionListener(e -> System.exit(0)); 
+        frameMenuInicial.add(btn_Sair); 
+
+        frameMenuInicial.setVisible(true);
         game = new Game();
         game.buildDeck();
         game.shuffleDeck();
@@ -46,10 +102,9 @@ public class App {
         dealers.add(new Enemy("Programador Tranquilão", 4, Enemy.PlayStyle.SAFE));
         dealers.add(new Enemy("Rafael \"O Professor\" Berri", 5, Enemy.PlayStyle.SAFE));
        
-        drawScreen();
+        
 
-        runRound();
-    }
+        }
 
     static public void drawScreen() {
         frame = new JFrame("BlackBerry");
