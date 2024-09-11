@@ -1,3 +1,5 @@
+package  src;
+
 public class Enemy extends Player {
     public enum PlayStyle {
         RISKY,
@@ -16,11 +18,11 @@ public class Enemy extends Player {
     }
 
     public String getIcon() {
-        return "assets/dealers/dealer-" + this.id + ".png";
+        return "src/assets/dealers/dealer-" + this.id + ".png";
     }
 
     public String getIconDefeat() {
-        return "assets/dealers/dealer-" + this.id + "-derrota.png";
+        return "src/assets/dealers/dealer-" + this.id + "-derrota.png";
     }
 
     public Enemy.GameAction decisionMaking(int hand_value) {

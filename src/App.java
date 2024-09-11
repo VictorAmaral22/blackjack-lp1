@@ -1,20 +1,20 @@
+package  src;
+
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
+import javax.swing.*;
 
 
 public class App {
     private static JFrame frame;
-    private static BackgroundPanel gamePanel;
     private static BackgroundPanel dealerBackgroundPanel;
     
     private static Game game;
@@ -104,7 +104,7 @@ public class App {
        
         
 
-        }
+    }
 
     static public void drawScreen() {
         frame = new JFrame("BlackBerry");
@@ -142,7 +142,7 @@ public class App {
         southPanel.add(playerPanel);
         southPanel.add(buttonPanel);
 
-        gamePanel = new BackgroundPanel("assets/tables/mesa0.png"); // Imagem inicial do fundo
+        gamePanel = new BackgroundPanel("src/assets/tables/mesa0.png"); // Imagem inicial do fundo
         gamePanel.setLayout(new BorderLayout());       
 
         gamePanel.add(dealerPanel, BorderLayout.NORTH);
@@ -152,7 +152,7 @@ public class App {
         JLabel dealerImageLabel = new JLabel(dealerImage);
         dealerImageLabel.setHorizontalAlignment(JLabel.CENTER);
 
-        dealerBackgroundPanel = new BackgroundPanel("assets/backgrounds/background-"+levelCont+".png"); // Imagem inicial do fundo
+        dealerBackgroundPanel = new BackgroundPanel("src/assets/backgrounds/background-"+levelCont+".png"); // Imagem inicial do fundo
         dealerBackgroundPanel.setLayout(new BorderLayout());
 
         dealerImagePanel = new JPanel();
@@ -169,7 +169,6 @@ public class App {
         frame.getContentPane().add(splitPane);
 
         frame.setVisible(true);
-        soundUtil.playBackgroundSound("assets/sounds/nivel0.wav");
     }
 
     private static void runRound() {
@@ -197,15 +196,15 @@ public class App {
 
         soundUtil.stopBackgroundSound();
         JOptionPane.showMessageDialog(frame, "Nível "+(levelCont+1));
-        gamePanel.setBackgroundImage("assets/tables/mesa" + levelCont + ".jpeg");
-        soundUtil.playBackgroundSound("assets/sounds/nivel" + levelCont + ".wav");
+        gamePanel.setBackgroundImage("src/assets/tables/mesa" + levelCont + ".jpeg");
+        soundUtil.playBackgroundSound("src/assets/sounds/nivel" + levelCont + ".wav");
     }
 
     private static void playerDrawCard() {
         player.hand.addCard(game.giveCard());
         updatePlayerCards();
 
-        soundUtil.playSoundEffect("assets/sounds/card.wav");
+        soundUtil.playSoundEffect("src/assets/sounds/card.wav");
 
         if (player.hand.getHandValue() > 21) {
             JOptionPane.showMessageDialog(frame, "Você estourou! Dealer vence.");
@@ -254,7 +253,7 @@ public class App {
     private static void updatePlayerCards() {
         playerPanel.removeAll();
         for (Card card : player.hand.getCards()) {
-            ImageIcon cardIcon = new ImageIcon("assets/cards/" + card.getImageName());
+            ImageIcon cardIcon = new ImageIcon("src/assets/cards/" + card.getImageName());
             Image scaledImage = cardIcon.getImage().getScaledInstance(100, 150, Image.SCALE_SMOOTH);
             ImageIcon scaledIcon = new ImageIcon(scaledImage);
             var cardLabel = new JLabel(scaledIcon);
@@ -267,7 +266,7 @@ public class App {
     private static void updateDealerCards() {
         dealerPanel.removeAll();
         for (Card card : dealers.get(levelCont).hand.getCards()) {
-            ImageIcon cardIcon = new ImageIcon("assets/cards/" + card.getImageName());
+            ImageIcon cardIcon = new ImageIcon("src/assets/cards/" + card.getImageName());
             Image scaledImage = cardIcon.getImage().getScaledInstance(100, 150, Image.SCALE_SMOOTH);
             ImageIcon scaledIcon = new ImageIcon(scaledImage);
             JLabel cardLabel = new JLabel(scaledIcon);
