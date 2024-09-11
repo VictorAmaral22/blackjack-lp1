@@ -16,11 +16,11 @@ public class Enemy extends Player {
     }
 
     public String getIcon() {
-        return "src/assets/images/dealer-" + this.id + ".png";
+        return "assets/dealers/dealer-" + this.id + ".png";
     }
 
     public String getIconDefeat() {
-        return "src/assets/images/dealer-" + this.id + "-derrota.png";
+        return "assets/dealers/dealer-" + this.id + "-derrota.png";
     }
 
     public Enemy.GameAction decisionMaking(int hand_value) {

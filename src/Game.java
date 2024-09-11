@@ -31,12 +31,12 @@ public class Game extends Deck {
 	// 	}
 	// }
 
-	// public Hand buildHand(Player player) {
-	// 	Hand hand = new Hand(player.getName());
-	// 	hand.addCard(giveCard());
-	// 	hand.addCard(giveCard());
-	// 	return hand;
-	// }
+	public Hand buildHand(Player player) {
+		Hand hand = new Hand(player.getName());
+		hand.addCard(giveCard());
+		hand.addCard(giveCard());
+		return hand;
+	}
 
 	// public Player.GameAction playerTurn(Player player, Hand playerHand) {
 	// 	while (true) {
