@@ -26,8 +26,8 @@ public class Hand {
         for (Card card : cards) {
             // Converte o valor da carta em um número inteiro
             int cardValue = Integer.parseInt(card.getValue());
-            // Embaralha as cartas com valores acima de 10 como se fossem 10 (valores de
-            // figuras)
+
+            // Arredonda as cartas que são maiores que 10 para 10
             total += Math.min(cardValue, 10);
         }
         return total;
