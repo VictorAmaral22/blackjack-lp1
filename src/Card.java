@@ -16,7 +16,7 @@ public class Card {
     }
 
     public String getImageName() {
-        return value + "-" + suit + ".png"; // Ajuste o formato do nome da imagem conforme necessário
+        return value + "-" + suit + ".png";
     }
 
 }

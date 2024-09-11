@@ -19,7 +19,7 @@ public class Game extends Deck {
 		this.enemies = new ArrayList<>();
 		this.enemies.add(new Enemy("Dev Junior", "/src/assets/oponents/oponent (3).png", Enemy.PlayStyle.SAFE));
 		this.enemies.add(new Enemy("Mestre do React", "/src/assets/oponents/oponent (1).png", Enemy.PlayStyle.RISKY));
-		// Continue adicionando inimigos...
+		// Add mais inimigo depois
 	}
 
 	public ArrayList<Enemy> getEnemies() {

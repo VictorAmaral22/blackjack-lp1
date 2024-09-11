@@ -12,7 +12,7 @@ public class Enemy extends Player {
         super(name);
         this.icon_url = icon_url;
         this.style = style;
-        this.hand = new Hand(); // Inicializa a mão do inimigo
+        this.hand = new Hand();
     }
 
     public String getIcon() {

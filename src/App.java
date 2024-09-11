@@ -17,7 +17,6 @@ public class App {
         game.buildDeck();
         game.shuffleDeck();
 
-
         player = new Player("Jogador");
         dealer = new Enemy("Dealer", "url_icon", Enemy.PlayStyle.SAFE);
 

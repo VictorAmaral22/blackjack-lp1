@@ -1,12 +1,12 @@
 public class Player {
     String name;
     int wins;
-    Hand hand; // Adiciona a mão do jogador
+    Hand hand;
 
     Player(String name) {
         this.name = name;
         this.wins = 0;
-        this.hand = new Hand(); // Inicializa a mão do jogador
+        this.hand = new Hand();
     }
 
     public enum GameAction {
@@ -27,12 +27,10 @@ public class Player {
         return this.wins;
     }
 
-    // Retorna a mão do jogador
     public Hand getHand() {
         return this.hand;
     }
 
-    // Define uma nova mão para o jogador (útil ao reiniciar o jogo)
     public void setHand(Hand hand) {
         this.hand = hand;
     }
