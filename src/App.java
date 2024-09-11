@@ -158,17 +158,19 @@ public class App {
         if (levelCont == 1) {
             soundUtil.stopBackgroundSound();
             JOptionPane.showMessageDialog(frame, "Nível 2");
-            gamePanel.setBackgroundImage("assets/amogus.png"); // Troca a imagem de fundo para o nível 2
+            gamePanel.setBackgroundImage("assets/mesa2.jpeg"); // Troca a imagem de fundo para o nível 2
             soundUtil.playBackgroundSound("C:\\\\Users\\\\shits\\\\Desktop\\\\blackjack-lp1-1\\\\src\\\\assets\\\\sounds\\\\nivel2.wav");
         }
         if (levelCont == 2) {
             soundUtil.stopBackgroundSound();
             JOptionPane.showMessageDialog(frame, "Nível 3");
+            gamePanel.setBackgroundImage("assets/mesa3.jpg");
             soundUtil.playBackgroundSound("C:\\\\Users\\\\shits\\\\Desktop\\\\blackjack-lp1-1\\\\src\\\\assets\\\\sounds\\\\nivel3.wav");
         }
         if (levelCont == 3) {
             soundUtil.stopBackgroundSound();
             JOptionPane.showMessageDialog(frame,"O Desafio final chegou");
+            gamePanel.setBackgroundImage("assets/mesa4.jpg");
             soundUtil.playBackgroundSound("C:\\\\Users\\\\shits\\\\Desktop\\\\blackjack-lp1-1\\\\src\\\\assets\\\\sounds\\\\berry.wav");
         }
     }
@@ -181,6 +183,12 @@ public class App {
 
         if (player.hand.getHandValue() > 21) {
             JOptionPane.showMessageDialog(frame, "Você estourou! Dealer vence.");
+            ImageIcon dealerImage = new ImageIcon("assets/images/dealer-" + levelCont + "-derrota.png");
+            JLabel dealerImageLabel = new JLabel(dealerImage);
+            dealerImagePanel.setLayout(new BorderLayout());
+            dealerImageLabel.setHorizontalAlignment(JLabel.CENTER);
+            dealerImagePanel.add(dealerImageLabel, BorderLayout.SOUTH);
+            dealerImagePanel.repaint();
             resetGame();
         }
     }
@@ -199,6 +207,12 @@ public class App {
             updtadeLevel();
         } else if (dealerPoints > playerPoints) {
             JOptionPane.showMessageDialog(frame, "Dealer vence com " + dealerPoints + " pontos.");
+            ImageIcon dealerImage = new ImageIcon("assets/images/dealer-" + levelCont + "-derrota.png");
+            JLabel dealerImageLabel = new JLabel(dealerImage);
+            dealerImagePanel.setLayout(new BorderLayout());
+            dealerImageLabel.setHorizontalAlignment(JLabel.CENTER);
+            dealerImagePanel.add(dealerImageLabel, BorderLayout.SOUTH);
+            dealerImagePanel.repaint();
             resetGame();
         } else if (dealerPoints < playerPoints) {
             JOptionPane.showMessageDialog(frame, "Você vence com " + playerPoints + " pontos.");
