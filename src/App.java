@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Image;
 import java.util.ArrayList;
@@ -25,14 +26,13 @@ public class App {
     private static JPanel dealerPanel;
     private static JPanel dealerImagePanel;
     private static JPanel buttonPanel;
+    private static JPanel livesPanel;
+
     private static SoundUtil soundUtil = new SoundUtil();
 
     private static int levelCont = 0;
-    // private static JPanel dealerImagePanel = new JPanel();
 
-    
-
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         game = new Game();
         game.buildDeck();
         game.shuffleDeck();
@@ -56,30 +56,54 @@ public class App {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(500, 500);
         frame.setLayout(new BorderLayout());
-
+       
         playerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        playerPanel.setOpaque(false); // Painel transparente
+        playerPanel.setOpaque(false);
 
         dealerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        dealerPanel.setOpaque(false); // Painel transparente
+        dealerPanel.setOpaque(false);
 
-        buttonPanel = new JPanel(new FlowLayout());
-        buttonPanel.setOpaque(false); // Painel transparente
+        buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.setOpaque(false);
+
+        ImageIcon livesImage = new ImageIcon("assets/lives/vidas-3.png");
+        Image scaledImage = livesImage.getImage().getScaledInstance(180, 180, Image.SCALE_SMOOTH);
+        ImageIcon scaledIcon = new ImageIcon(scaledImage);
+        JLabel livesImageLabel = new JLabel(scaledIcon);
+        livesImageLabel.setHorizontalAlignment(JLabel.LEFT);
+        livesPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        livesPanel.add(livesImageLabel);
+        livesPanel.setOpaque(false);
+        Dimension size = new Dimension(180, 180);
+        livesPanel.setMaximumSize(size);
+
         JButton btnDrawCard = new JButton("Comprar Carta");
         JButton btnStay = new JButton("Passar");
-        JButton btnReset = new JButton("Reiniciar Jogo");
-        btnDrawCard.addActionListener(e -> {
-            playerDrawCard();
+        JButton btnReset = new JButton("Desistir");
+
+        btnDrawCard.setHorizontalAlignment(JLabel.RIGHT);
+        btnStay.setHorizontalAlignment(JLabel.RIGHT);
+        btnReset.setHorizontalAlignment(JLabel.RIGHT);
+
+        btnDrawCard.addActionListener((var e) -> {
+            try {
+                playerDrawCard();
+            } catch (InterruptedException ex) {}
         });
         btnStay.addActionListener(e -> {
-            dealerTurn();
+            try {
+                dealerTurn();
+            } catch (InterruptedException ex) {}
         });
         btnReset.addActionListener(e -> {
-            resetGame();
+            System.exit(0);
         });
         buttonPanel.add(btnDrawCard);
         buttonPanel.add(btnStay);
         buttonPanel.add(btnReset);
+
+        buttonPanel.add(livesPanel);
 
         JPanel southPanel = new JPanel();
         southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.Y_AXIS));
@@ -87,9 +111,14 @@ public class App {
         southPanel.add(playerPanel);
         southPanel.add(buttonPanel);
 
-        gamePanel = new BackgroundPanel("assets/tables/mesa0.png"); // Imagem inicial do fundo
-        gamePanel.setLayout(new BorderLayout());       
+        ImageIcon deckImage = new ImageIcon("assets/deck.png");
+        JLabel deckImageLabel = new JLabel(deckImage);
+        deckImageLabel.setHorizontalAlignment(JLabel.CENTER);
 
+        gamePanel = new BackgroundPanel("assets/tables/mesa" + levelCont + ".png"); // Imagem inicial do fundo
+        gamePanel.setLayout(new BorderLayout());
+
+        gamePanel.add(deckImageLabel, BorderLayout.CENTER);
         gamePanel.add(dealerPanel, BorderLayout.NORTH);
         gamePanel.add(southPanel, BorderLayout.SOUTH);
 
@@ -114,24 +143,31 @@ public class App {
         frame.getContentPane().add(splitPane);
 
         frame.setVisible(true);
-        soundUtil.playBackgroundSound("assets/sounds/nivel0.wav");
+        soundUtil.playBackgroundSound("assets/sounds/nivel" + levelCont + ".wav");
     }
 
-    private static void runRound() {
-        if (levelCont > dealers.size()){
-            System.exit(0); // ADD AQUI O QUE VAI ACONTECER CASO O PLAYER GANHE TODOS LEVELS
-        }
-
+    private static void runRound() throws InterruptedException {
         player.hand = game.buildHand(player);
         dealers.get(levelCont).hand = game.buildHand(dealers.get(levelCont));
 
         updatePlayerCards();
-        updateDealerCards();
+        updateDealerCards(false);
     }
 
     private static void updtadeLevel() {
         levelCont += 1;
-        System.out.println(levelCont);
+
+        if (levelCont == 5){
+            player.setLives(1);
+        } 
+        // else {
+        //     player.resetLives();
+        // }
+
+        if (levelCont > dealers.size()-1) {
+            System.exit(0);
+        }
+
         dealerImagePanel.removeAll();
         ImageIcon dealerImage = new ImageIcon(dealers.get(levelCont).getIcon());
         JLabel dealerImageLabel = new JLabel(dealerImage);
@@ -140,13 +176,67 @@ public class App {
         dealerImagePanel.add(dealerImageLabel, BorderLayout.SOUTH);
         dealerImagePanel.repaint();
 
+        // livesPanel.removeAll();
+        // ImageIcon livesImage = new ImageIcon("assets/lives/vidas-"+player.getLives()+".png");
+        // Image scaledImage = livesImage.getImage().getScaledInstance(180, 180, Image.SCALE_SMOOTH);
+        // ImageIcon scaledIcon = new ImageIcon(scaledImage);
+        // JLabel livesImageLabel = new JLabel(scaledIcon);
+        // livesImageLabel.setHorizontalAlignment(JLabel.LEFT);
+        // livesPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        // livesPanel.add(livesImageLabel);
+        // livesPanel.setOpaque(false);
+        // Dimension size = new Dimension(180, 180);
+        // livesPanel.setMaximumSize(size);
+        // livesPanel.revalidate();
+        // livesPanel.repaint();
+
         soundUtil.stopBackgroundSound();
         JOptionPane.showMessageDialog(frame, "Nível "+(levelCont+1));
-        gamePanel.setBackgroundImage("assets/tables/mesa" + levelCont + ".jpeg");
+        gamePanel.setBackgroundImage("assets/tables/mesa" + levelCont + ".png");
         soundUtil.playBackgroundSound("assets/sounds/nivel" + levelCont + ".wav");
     }
 
-    private static void playerDrawCard() {
+    private static void playerDefeated () throws InterruptedException {
+        ImageIcon dealerImage;
+
+        if (player.getLives() - 1 == 0) {
+            JOptionPane.showMessageDialog(frame, "Suas tentativas acabaram!");
+            levelCont = 0;
+            player.resetLives();
+            gamePanel.setBackgroundImage("assets/tables/mesa" + levelCont + ".png");
+            soundUtil.stopBackgroundSound();
+            soundUtil.playBackgroundSound("assets/sounds/nivel" + levelCont + ".wav");
+            dealerImage = new ImageIcon(dealers.get(levelCont).getIcon());
+        } else {
+            player.removeLives();
+            dealerImage = new ImageIcon(dealers.get(levelCont).getIconDefeat());
+        }        
+
+        updateDealerCards(true);
+        dealerImagePanel.removeAll();
+        
+        JLabel dealerImageLabel = new JLabel(dealerImage);
+        dealerImagePanel.setLayout(new BorderLayout());
+        dealerImageLabel.setHorizontalAlignment(JLabel.CENTER);
+        dealerImagePanel.add(dealerImageLabel, BorderLayout.SOUTH);
+        dealerImagePanel.revalidate();
+        dealerImagePanel.repaint(); 
+
+        livesPanel.removeAll();
+        ImageIcon livesImage = new ImageIcon("assets/lives/vidas-" + player.getLives() + ".png");
+        Image scaledImage = livesImage.getImage().getScaledInstance(180, 180, Image.SCALE_SMOOTH);
+        ImageIcon scaledIcon = new ImageIcon(scaledImage);
+        JLabel livesImageLabel = new JLabel(scaledIcon);
+        livesImageLabel.setHorizontalAlignment(JLabel.LEFT);
+        livesPanel.add(livesImageLabel);
+        
+        livesPanel.revalidate();
+        livesPanel.repaint();       
+
+        resetGame();
+    }
+
+    private static void playerDrawCard() throws InterruptedException {
         player.hand.addCard(game.giveCard());
         updatePlayerCards();
 
@@ -154,49 +244,39 @@ public class App {
 
         if (player.hand.getHandValue() > 21) {
             JOptionPane.showMessageDialog(frame, "Você estourou! Dealer vence.");
-            ImageIcon dealerImage = new ImageIcon(dealers.get(levelCont).getIconDefeat());
-            JLabel dealerImageLabel = new JLabel(dealerImage);
-            dealerImagePanel.setLayout(new BorderLayout());
-            dealerImageLabel.setHorizontalAlignment(JLabel.CENTER);
-            dealerImagePanel.add(dealerImageLabel, BorderLayout.SOUTH);
-            dealerImagePanel.repaint();
-            resetGame();
+            playerDefeated();
         }
     }
 
-    private static void dealerTurn() {
-        while (dealers.get(levelCont).hand.getHandValue() < 17) {
+    private static void dealerTurn() throws InterruptedException {
+        updateDealerCards(true);
+        while (dealers.get(levelCont).decisionMaking() == Enemy.GameAction.BUY) {
             dealers.get(levelCont).hand.addCard(game.giveCard());
-            updateDealerCards();
+            updateDealerCards(true);
         }
-
+        
         int dealerPoints = dealers.get(levelCont).hand.getHandValue();
         int playerPoints = player.hand.getHandValue();
 
         if (dealerPoints > 21) {
             JOptionPane.showMessageDialog(frame, "Dealer estourou! Você vence.");
+
             updtadeLevel();
         } else if (dealerPoints > playerPoints) {
             JOptionPane.showMessageDialog(frame, "Dealer vence com " + dealerPoints + " pontos.");
-            ImageIcon dealerImage = new ImageIcon(dealers.get(levelCont).getIconDefeat());
-            JLabel dealerImageLabel = new JLabel(dealerImage);
-            dealerImagePanel.setLayout(new BorderLayout());
-            dealerImageLabel.setHorizontalAlignment(JLabel.CENTER);
-            dealerImagePanel.add(dealerImageLabel, BorderLayout.SOUTH);
-            dealerImagePanel.repaint();
-            resetGame();
+            
+            playerDefeated();
         } else if (dealerPoints < playerPoints) {
             JOptionPane.showMessageDialog(frame, "Você vence com " + playerPoints + " pontos.");
+
             updtadeLevel();
         } else {
-            JOptionPane.showMessageDialog(frame, "Empate!");
-            
+            JOptionPane.showMessageDialog(frame, "Empate!");            
         }
         resetGame();
-
     }
 
-    private static void updatePlayerCards() {
+    private static void updatePlayerCards() throws InterruptedException {
         playerPanel.removeAll();
         for (Card card : player.hand.getCards()) {
             ImageIcon cardIcon = new ImageIcon("assets/cards/" + card.getImageName());
@@ -209,29 +289,44 @@ public class App {
         playerPanel.repaint();
     }
 
-    private static void updateDealerCards() {
+    private static void updateDealerCards(boolean showAll) throws InterruptedException {
         dealerPanel.removeAll();
+        int c = 0;
         for (Card card : dealers.get(levelCont).hand.getCards()) {
-            ImageIcon cardIcon = new ImageIcon("assets/cards/" + card.getImageName());
+            ImageIcon cardIcon;
+
+            if (c == 0 && !showAll) {
+                cardIcon = new ImageIcon("assets/cards/back.png");
+            } else {
+                cardIcon = new ImageIcon("assets/cards/" + card.getImageName());
+            }
+
             Image scaledImage = cardIcon.getImage().getScaledInstance(100, 150, Image.SCALE_SMOOTH);
             ImageIcon scaledIcon = new ImageIcon(scaledImage);
             JLabel cardLabel = new JLabel(scaledIcon);
             dealerPanel.add(cardLabel);
+            c += 1;
+            dealerPanel.revalidate();
+            dealerPanel.repaint();
         }
-        dealerPanel.revalidate();
-        dealerPanel.repaint();
     }
 
-    private static void resetGame() {
+    private static void resetGame() throws InterruptedException {
         playerPanel.removeAll();
         dealerPanel.removeAll();
+        
         playerPanel.revalidate();
-        dealerPanel.revalidate();
         playerPanel.repaint();
+
+        dealerPanel.revalidate();
         dealerPanel.repaint();
+        
+        dealerImagePanel.revalidate();
         dealerImagePanel.repaint();
+        
         game.buildDeck();
         game.shuffleDeck();
+
         runRound();
     }
 }

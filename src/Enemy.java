@@ -23,23 +23,23 @@ public class Enemy extends Player {
         return "assets/dealers/dealer-" + this.id + "-derrota.png";
     }
 
-    public Enemy.GameAction decisionMaking(int hand_value) {
+    public Enemy.GameAction decisionMaking() {
         if (this.style == PlayStyle.RISKY) {
-            if (hand_value == 21 || hand_value >= 20) {
+            if (this.hand.getHandValue() == 21 || this.hand.getHandValue() >= 20) {
                 return Enemy.GameAction.PASS;
             } else {
                 return Enemy.GameAction.BUY;
             }
         }
         if (this.style == PlayStyle.MODERATE) {
-            if (hand_value == 21 || hand_value >= 18) {
+            if (this.hand.getHandValue() == 21 || this.hand.getHandValue() >= 18) {
                 return Enemy.GameAction.PASS;
             } else {
                 return Enemy.GameAction.BUY;
             }
         }
         if (this.style == PlayStyle.SAFE) {
-            if (hand_value == 21 || hand_value >= 17) {
+            if (this.hand.getHandValue() == 21 || this.hand.getHandValue() >= 17) {
                 return Enemy.GameAction.PASS;
             } else {
                 return Enemy.GameAction.BUY;

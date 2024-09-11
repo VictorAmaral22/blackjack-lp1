@@ -1,12 +1,12 @@
 public class Player {
     String name;
-    int wins;
     Hand hand;
+    int lives;
 
     Player(String name) {
         this.name = name;
-        this.wins = 0;
         this.hand = new Hand();
+        this.lives = 3;
     }
 
     public enum GameAction {
@@ -15,18 +15,26 @@ public class Player {
         BUY
     }
 
-    public void addWin() {
-        this.wins += 1;
+    public void removeLives() {
+        this.lives -= 1;
+    }
+    
+    public int getLives() {
+        return this.lives;
+    }
+
+    public void setLives(int value) {
+        this.lives = value;
+    }
+
+    public void resetLives() {
+        this.lives = 3;
     }
 
     public String getName() {
         return this.name;
     }
-
-    public int getWins() {
-        return this.wins;
-    }
-
+    
     public Hand getHand() {
         return this.hand;
     }
