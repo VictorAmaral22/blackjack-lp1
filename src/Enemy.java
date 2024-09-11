@@ -5,23 +5,27 @@ public class Enemy extends Player {
         SAFE
     }
 
-    String icon_url;
+    int id;
     PlayStyle style;
 
-    public Enemy(String name, String icon_url, PlayStyle style) {
+    public Enemy(String name, int id, PlayStyle style) {
         super(name);
-        this.icon_url = icon_url;
+        this.id = id;
         this.style = style;
         this.hand = new Hand();
     }
 
     public String getIcon() {
-        return this.icon_url;
+        return "src/assets/images/dealer-" + this.id + ".png";
+    }
+
+    public String getIconDefeat() {
+        return "src/assets/images/dealer-" + this.id + "-derrota.png";
     }
 
     public Enemy.GameAction decisionMaking(int hand_value) {
         if (this.style == PlayStyle.RISKY) {
-            if (hand_value == 21 || hand_value >= 19) {
+            if (hand_value == 21 || hand_value >= 20) {
                 return Enemy.GameAction.PASS;
             } else {
                 return Enemy.GameAction.BUY;
@@ -35,7 +39,7 @@ public class Enemy extends Player {
             }
         }
         if (this.style == PlayStyle.SAFE) {
-            if (hand_value == 21 || hand_value >= 16) {
+            if (hand_value == 21 || hand_value >= 17) {
                 return Enemy.GameAction.PASS;
             } else {
                 return Enemy.GameAction.BUY;
