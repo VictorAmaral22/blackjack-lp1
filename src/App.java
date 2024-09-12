@@ -15,7 +15,7 @@ import javax.swing.*;
 public class App {
     private static JFrame frame;
     private static BackgroundPanel dealerBackgroundPanel;
-    private static JFrame frameFinalScreen;
+    private static JFrame frameFinalScreen = new JFrame();
     
     private static Game game;
     private static Player player;
@@ -28,12 +28,11 @@ public class App {
     private static JPanel livesPanel;
 
     private static final SoundUtil soundUtil = new SoundUtil();
-    private static int levelCont = 4;
+    private static int levelCont = 1;
     private static Font pixelMplus;    
     private static final JFrame frameMenuInicial = new JFrame();  
 
     private static BackgroundPanel gamePanel;
-
     public static void main(String[] args) {
         try{
             pixelMplus = Font.createFont(Font.TRUETYPE_FONT, new File("assets/fonts/PixelMplus10-Regular.ttf")).deriveFont(30f);	
