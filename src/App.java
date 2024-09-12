@@ -43,7 +43,7 @@ public class App {
 
         soundUtil.playBackgroundSound("assets/sounds/main_title.wav");
 
-        frameMenuInicial.setTitle("BlackBarry");
+        frameMenuInicial.setTitle("BlackBerry");
         frameMenuInicial.setSize(600, 400);
         frameMenuInicial.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frameMenuInicial.setResizable(false);
@@ -52,7 +52,7 @@ public class App {
 
         frameMenuInicial.setLayout(null);
 
-        JLabel title = new JLabel("BlackBarry");
+        JLabel title = new JLabel("BlackBerry");
         title.setForeground(Color.WHITE);
         title.setFont(pixelMplus);
         title.setBounds(200, 50, 200, 50);
@@ -380,7 +380,7 @@ public class App {
     private static void finalScreen() {
         soundUtil.playBackgroundSound("assets/sounds/finalscreensong.wav");
 
-        frameFinalScreen.setTitle("BlackBarry");
+        frameFinalScreen.setTitle("BlackBerry");
         frameFinalScreen.setSize(1920, 1080);
         frameFinalScreen.setResizable(true);
         frameFinalScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
