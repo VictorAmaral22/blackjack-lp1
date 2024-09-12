@@ -15,6 +15,7 @@ import javax.swing.*;
 public class App {
     private static JFrame frame;
     private static BackgroundPanel dealerBackgroundPanel;
+    private static JFrame frameFinalScreen;
     
     private static Game game;
     private static Player player;
@@ -27,7 +28,7 @@ public class App {
     private static JPanel livesPanel;
 
     private static final SoundUtil soundUtil = new SoundUtil();
-    private static int levelCont = 0;
+    private static int levelCont = 4;
     private static Font pixelMplus;    
     private static final JFrame frameMenuInicial = new JFrame();  
 
