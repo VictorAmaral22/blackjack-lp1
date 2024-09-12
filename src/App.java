@@ -1,21 +1,19 @@
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
+import javax.swing.*;
 
 
 public class App {
     private static JFrame frame;
-    private static BackgroundPanel gamePanel;
     private static BackgroundPanel dealerBackgroundPanel;
     
     private static Game game;
@@ -28,26 +26,82 @@ public class App {
     private static JPanel buttonPanel;
     private static JPanel livesPanel;
 
-    private static SoundUtil soundUtil = new SoundUtil();
-
+    private static final SoundUtil soundUtil = new SoundUtil();
     private static int levelCont = 0;
+    private static Font pixelMplus;    
+    private static final JFrame frameMenuInicial = new JFrame();  
 
-    public static void main(String[] args) throws InterruptedException {
+    private static BackgroundPanel gamePanel;
+
+    public static void main(String[] args) {
+        try{
+            pixelMplus = Font.createFont(Font.TRUETYPE_FONT, new File("assets/fonts/PixelMplus10-Regular.ttf")).deriveFont(30f);	
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("assets/fonts/PixelMplus10-Regular.ttf")));			
+        }
+        catch(IOException | FontFormatException e){}
+
+        soundUtil.playBackgroundSound("assets/sounds/main_title.wav");
+
+        frameMenuInicial.setTitle("BlackBarry");
+        frameMenuInicial.setSize(600, 400);
+        frameMenuInicial.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frameMenuInicial.setResizable(false);
+        frameMenuInicial.setLocationRelativeTo(null); 
+        frameMenuInicial.getContentPane().setBackground(Color.black);
+
+        frameMenuInicial.setLayout(null);
+
+        JLabel title = new JLabel("BlackBarry");
+        title.setForeground(Color.WHITE);
+        title.setFont(pixelMplus);
+        title.setBounds(200, 50, 200, 50);
+        title.setHorizontalAlignment(SwingConstants.CENTER);
+        frameMenuInicial.add(title);
+
+        JButton btn_Iniciar = new JButton("Iniciar");
+        btn_Iniciar.setBackground(Color.WHITE);
+        btn_Iniciar.setBorder(null);
+        btn_Iniciar.setFocusPainted(false);
+        btn_Iniciar.setBounds(200, 140, 200, 50);
+        btn_Iniciar.setFont(pixelMplus);
+        btn_Iniciar.addActionListener(e -> {
+            frameMenuInicial.setVisible(false);
+            soundUtil.stopBackgroundSound();
+            try {
+                startGame();
+            } catch (InterruptedException ex) {
+            }
+        });
+        frameMenuInicial.add(btn_Iniciar);
+
+        JButton btn_Sair = new JButton("Sair");
+        btn_Sair.setBackground(Color.WHITE);
+        btn_Sair.setBorder(null);
+        btn_Sair.setFocusPainted(false);
+        btn_Sair.setBounds(200, 220, 200, 50);
+        btn_Sair.setFont(pixelMplus);
+        btn_Sair.addActionListener(e -> System.exit(0)); 
+        frameMenuInicial.add(btn_Sair); 
+
+        frameMenuInicial.setVisible(true);
+    }
+
+    static public void startGame () throws InterruptedException {        
         game = new Game();
         game.buildDeck();
         game.shuffleDeck();
 
         player = new Player("Jogador");
-        
+
         dealers.add(new Enemy("Dev Júnior", 0, Enemy.PlayStyle.RISKY));
         dealers.add(new Enemy("Fã do React", 1, Enemy.PlayStyle.RISKY));
         dealers.add(new Enemy("Casal programador", 2, Enemy.PlayStyle.MODERATE));
         dealers.add(new Enemy("Mestre dos Cursinhos", 3, Enemy.PlayStyle.MODERATE));
         dealers.add(new Enemy("Programador Tranquilão", 4, Enemy.PlayStyle.SAFE));
         dealers.add(new Enemy("Rafael \"O Professor\" Berri", 5, Enemy.PlayStyle.SAFE));
-       
-        drawScreen();
 
+        drawScreen();
         runRound();
     }
 
@@ -154,7 +208,7 @@ public class App {
         updateDealerCards(false);
     }
 
-    private static void updtadeLevel() {
+    private static void updateLevel() {
         levelCont += 1;
 
         if (levelCont == 5){
@@ -175,25 +229,13 @@ public class App {
         dealerImageLabel.setHorizontalAlignment(JLabel.CENTER);
         dealerImagePanel.add(dealerImageLabel, BorderLayout.SOUTH);
         dealerImagePanel.repaint();
-
-        // livesPanel.removeAll();
-        // ImageIcon livesImage = new ImageIcon("assets/lives/vidas-"+player.getLives()+".png");
-        // Image scaledImage = livesImage.getImage().getScaledInstance(180, 180, Image.SCALE_SMOOTH);
-        // ImageIcon scaledIcon = new ImageIcon(scaledImage);
-        // JLabel livesImageLabel = new JLabel(scaledIcon);
-        // livesImageLabel.setHorizontalAlignment(JLabel.LEFT);
-        // livesPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        // livesPanel.add(livesImageLabel);
-        // livesPanel.setOpaque(false);
-        // Dimension size = new Dimension(180, 180);
-        // livesPanel.setMaximumSize(size);
-        // livesPanel.revalidate();
-        // livesPanel.repaint();
-
         soundUtil.stopBackgroundSound();
         JOptionPane.showMessageDialog(frame, "Nível "+(levelCont+1));
         gamePanel.setBackgroundImage("assets/tables/mesa" + levelCont + ".png");
         soundUtil.playBackgroundSound("assets/sounds/nivel" + levelCont + ".wav");
+
+
+        livesHandler();
     }
 
     private static void playerDefeated () throws InterruptedException {
@@ -222,16 +264,7 @@ public class App {
         dealerImagePanel.revalidate();
         dealerImagePanel.repaint(); 
 
-        livesPanel.removeAll();
-        ImageIcon livesImage = new ImageIcon("assets/lives/vidas-" + player.getLives() + ".png");
-        Image scaledImage = livesImage.getImage().getScaledInstance(180, 180, Image.SCALE_SMOOTH);
-        ImageIcon scaledIcon = new ImageIcon(scaledImage);
-        JLabel livesImageLabel = new JLabel(scaledIcon);
-        livesImageLabel.setHorizontalAlignment(JLabel.LEFT);
-        livesPanel.add(livesImageLabel);
-        
-        livesPanel.revalidate();
-        livesPanel.repaint();       
+        livesHandler();  
 
         resetGame();
     }
@@ -261,7 +294,7 @@ public class App {
         if (dealerPoints > 21) {
             JOptionPane.showMessageDialog(frame, "Dealer estourou! Você vence.");
 
-            updtadeLevel();
+            updateLevel();
         } else if (dealerPoints > playerPoints) {
             JOptionPane.showMessageDialog(frame, "Dealer vence com " + dealerPoints + " pontos.");
             
@@ -269,7 +302,7 @@ public class App {
         } else if (dealerPoints < playerPoints) {
             JOptionPane.showMessageDialog(frame, "Você vence com " + playerPoints + " pontos.");
 
-            updtadeLevel();
+            updateLevel();
         } else {
             JOptionPane.showMessageDialog(frame, "Empate!");            
         }
@@ -328,5 +361,18 @@ public class App {
         game.shuffleDeck();
 
         runRound();
+    }
+
+    private static void livesHandler() {
+        livesPanel.removeAll();
+        ImageIcon livesImage = new ImageIcon("assets/lives/vidas-" + player.getLives() + ".png");
+        Image scaledImage = livesImage.getImage().getScaledInstance(180, 180, Image.SCALE_SMOOTH);
+        ImageIcon scaledIcon = new ImageIcon(scaledImage);
+        JLabel livesImageLabel = new JLabel(scaledIcon);
+        livesImageLabel.setHorizontalAlignment(JLabel.LEFT);
+        livesPanel.add(livesImageLabel);
+
+        livesPanel.revalidate();
+        livesPanel.repaint();
     }
 }

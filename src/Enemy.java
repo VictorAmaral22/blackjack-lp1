@@ -1,4 +1,6 @@
+
 public class Enemy extends Player {
+
     public enum PlayStyle {
         RISKY,
         MODERATE,
