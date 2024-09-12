@@ -28,7 +28,7 @@ public class App {
     private static JPanel livesPanel;
 
     private static final SoundUtil soundUtil = new SoundUtil();
-    private static int levelCont = 1;
+    private static int levelCont = 0;
     private static Font pixelMplus;    
     private static final JFrame frameMenuInicial = new JFrame();  
 
