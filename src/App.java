@@ -219,7 +219,9 @@ public class App {
         // }
 
         if (levelCont > dealers.size()-1) {
-            System.exit(0);
+            soundUtil.stopBackgroundSound();
+            frame.setVisible(false);
+            finalScreen();
         }
 
         dealerImagePanel.removeAll();
@@ -374,5 +376,21 @@ public class App {
 
         livesPanel.revalidate();
         livesPanel.repaint();
+    }
+    private static void finalScreen() {
+        soundUtil.playBackgroundSound("assets/sounds/finalscreensong.wav");
+
+        frameFinalScreen.setTitle("BlackBarry");
+        frameFinalScreen.setSize(1920, 1080);
+        frameFinalScreen.setResizable(true);
+        frameFinalScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frameFinalScreen.setLocationRelativeTo(null); 
+
+
+        BackgroundPanel finalPanel = new BackgroundPanel("assets/backgrounds/barryfinal.png");
+        finalPanel.setLayout(new BorderLayout());
+        frameFinalScreen.getContentPane().add(finalPanel);
+
+        frameFinalScreen.setVisible(true);            
     }
 }
